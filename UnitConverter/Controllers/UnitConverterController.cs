@@ -16,6 +16,10 @@ namespace UnitConverter.Controllers {
     {
         private readonly IUnitConverterService _unitConverterService;
 
+        public UnitConverterController(IUnitConverterService unitConverterService) 
+        {
+            _unitConverterService = unitConverterService;
+        }
         [HttpPost()]
 
         public double GenerateNewValue(ConversionRequest request)
