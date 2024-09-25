@@ -9,8 +9,6 @@ namespace UnitConverter.Services
 {
     public interface IUnitConverterService
     {
-        public double ConvertLength(double number, Unit from, Unit to);
-        public double ConvertWeight(double number, Unit from, Unit to);
-        public double ConvertTemperature(double number, Unit from, Unit to);
+        public double Convert(double number, Unit from, Unit to);   
     }
 }

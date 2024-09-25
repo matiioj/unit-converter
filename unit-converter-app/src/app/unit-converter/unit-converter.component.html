@@ -1,0 +1,19 @@
+<h1>Unit Converter</h1>
+<div class="converter-form">
+    <div class="radio-group">
+        <label><input type="radio" [(ngModel)]="unitType" value="Length"> Length</label>
+        <label><input type="radio" [(ngModel)]="unitType" value="Weight"> Weight</label>
+        <label><input type="radio" [(ngModel)]="unitType" value="Temperature"> Temperature</label>
+    </div>
+    <input type="number" [(ngModel)]="value" placeholder="Enter the value to convert" required>
+    <select [(ngModel)]="fromUnit">
+        <option value="">Unit to Convert from</option>
+        <option *ngFor="let unit of getUnits()" [value]="unit">{{unit}}</option>
+    </select>
+    <select [(ngModel)]="toUnit">
+        <option value="">Unit to Convert to</option>
+        <option *ngFor="let unit of getUnits()" [value]="unit">{{unit}}</option>
+    </select>
+    <button (click)="convert()">Convert</button>
+    <p>{{result}}</p>
+</div>

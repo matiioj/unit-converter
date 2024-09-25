@@ -9,34 +9,36 @@ namespace UnitConverter.Services
 {
     public class UnitConverterService : IUnitConverterService
     {
-
-        public double ConvertLength(double value, Unit from, Unit to)
+        public double Convert(double value, Unit from, Unit to)
         {
             if (from == to)
-                return value;
-
-            // Define length conversion factors in millimeters
-            var lengthFactors = new Dictionary<UnitName, double>
             {
-                { UnitName.Milimeter, 1 },
-                { UnitName.Centimeter, 10 },
-                { UnitName.Meter, 1000 },
-                { UnitName.Kilometer, 1000000 },
-                { UnitName.Inch, 25.4 },
-                { UnitName.Foot, 304.8 },
-                { UnitName.Yard, 914.4 },
-                { UnitName.Mile, 1609344 }
-            };
+                return value;
+            }
 
-            // Convert 'from' unit to millimeters, then convert from millimeters to 'to' unit
-            double fromFactor = lengthFactors[from.unitName];
-            double toFactor = lengthFactors[to.unitName];
+            switch (from.unitType)
+            {
+                case UnitType.Weight:
+                    return ConvertLengthOrWeight(value, from, to);
+                case UnitType.Length:
+                    return ConvertLengthOrWeight(value, from, to);
+                case UnitType.Temperature:
+                    return ConvertTemperature(value, from, to);
+                default:
+                    throw new ArgumentException("Conversion not supported");
+            }
+        }
 
-            // Perform conversion
+        private double ConvertLengthOrWeight(double value, Unit from, Unit to)
+        {
+            var factors = GetUnitFactors(from.unitType);
+            double fromFactor = factors[from.unitName];
+            double toFactor = factors[to.unitName];
+
             return value * fromFactor / toFactor;
         }
 
-        public double ConvertTemperature(double value, Unit from, Unit to)
+        private double ConvertTemperature(double value, Unit from, Unit to)
         {
             if (from == to)
                 return value;
@@ -60,27 +62,41 @@ namespace UnitConverter.Services
             }
         }
 
-        public double ConvertWeight(double value, Unit from, Unit to)
+        private Dictionary<UnitName, double> GetUnitFactors(UnitType unitType)
         {
-            if (from == to)
-                return value;
+            Dictionary<UnitName, double> factors = new Dictionary<UnitName, double>();
 
-            // Define weight conversion factors in milligrams
-            var weightFactors = new Dictionary<UnitName, double>
+            switch (unitType)
             {
-                { UnitName.Miligram, 1 },
-                { UnitName.Gram, 1000 },
-                { UnitName.Kilogram, 1000000 },
-                { UnitName.Ounce, 28349.5 },
-                { UnitName.Pound, 453592 }
-            };
+                case UnitType.Weight:
 
-            // Convert 'from' unit to milligrams, then convert from milligrams to 'to' unit
-            double fromFactor = weightFactors[from.unitName];
-            double toFactor = weightFactors[to.unitName];
+                    factors = new Dictionary<UnitName, double>
+                    {
+                        { UnitName.Milimeter, 1 },
+                        { UnitName.Centimeter, 10 },
+                        { UnitName.Meter, 1000 },
+                        { UnitName.Kilometer, 1000000 },
+                        { UnitName.Inch, 25.4 },
+                        { UnitName.Foot, 304.8 },
+                        { UnitName.Yard, 914.4 },
+                        { UnitName.Mile, 1609344 }
+                    };
+                    break;
 
-            // Perform conversion
-            return (value * fromFactor) / toFactor;
+                case UnitType.Length:
+
+                    factors = new Dictionary<UnitName, double>
+                    {
+                        { UnitName.Miligram, 1 },
+                        { UnitName.Gram, 1000 },
+                        { UnitName.Kilogram, 1000000 },
+                        { UnitName.Ounce, 28349.5 },
+                        { UnitName.Pound, 453592 }
+                    };
+                    break;
+
+            }
+            return factors;
         }
     }
 }

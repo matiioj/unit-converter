@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\UnitConverter",
+    "\\UnitConverter.Shared",
+    "\\UnitConverter.Shared\\Enums",
+    "\\UnitConverter\\Models"
+  ],
+  "SelectedNode": "\\UnitConverter\\UnitConverter.csproj",
+  "PreviewInSolutionExplorer": false
+}

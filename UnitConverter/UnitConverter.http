@@ -1,6 +1,23 @@
 @UnitConverter_HostAddress = http://localhost:5180
 
-GET {{UnitConverter_HostAddress}}/weatherforecast/
-Accept: application/json
+# POST {{UnitConverter_HostAddress}}/unitconverter
+# Content-Type: application/json 
 
-###
+# {
+#     "value": 100,
+#     "fromUnitType": 1, 
+#     "fromUnitName": 2, 
+#     "toUnitType": 1, 
+#     "toUnitName": 3 
+# }
+
+POST {{UnitConverter_HostAddress}}/unitconverter
+Content-Type: application/json 
+
+{
+    "value": 30,
+    "fromUnitType": 1, 
+    "fromUnitName": 13, 
+    "toUnitType": 2, 
+    "toUnitName": 15 
+}
