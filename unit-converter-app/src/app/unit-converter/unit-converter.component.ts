@@ -2,17 +2,18 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UnitConverterService } from '../unit-converter.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-unit-converter',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './unit-converter.component.html',
-  styleUrls: ['./unit-converter.component.css']
+  styleUrls: ['./unit-converter.component.css'],
 })
+
 export class UnitConverterComponent {
-  // Define unitType as a union of specific keys
-  unitType: 'Length' | 'Weight' | 'Temperature' = 'Temperature';
+  unitType: 'Length' | 'Weight' | 'Temperature' = 'Length';
 
   value: number | null = null;
   fromUnit: string = '';
@@ -23,7 +24,7 @@ export class UnitConverterComponent {
   unitTypes = {
     Length: 0,
     Weight: 1,
-    Temperature: 2
+    Temperature: 2,
   };
 
   lengthUnits = {
@@ -34,7 +35,7 @@ export class UnitConverterComponent {
     Inch: 4,
     Foot: 5,
     Yard: 6,
-    Mile: 7
+    Mile: 7,
   };
 
   weightUnits = {
@@ -42,16 +43,19 @@ export class UnitConverterComponent {
     Gram: 9,
     Kilogram: 10,
     Ounce: 11,
-    Pound: 12
+    Pound: 12,
   };
 
   temperatureUnits = {
     Celsius: 13,
     Fahrenheit: 14,
-    Kelvin: 15
+    Kelvin: 15,
   };
 
-  constructor(private unitConverterService: UnitConverterService) {}
+  constructor(
+    private unitConverterService: UnitConverterService,
+    private router: Router
+  ) {}
 
   getUnits(): string[] {
     switch (this.unitType) {
@@ -78,21 +82,30 @@ export class UnitConverterComponent {
       fromUnitType: this.unitTypes[this.unitType], // Enum for UnitType
       fromUnitName: this.getUnitEnum(this.fromUnit), // Enum for UnitName
       toUnitType: this.unitTypes[this.unitType], // Enum for UnitType
-      toUnitName: this.getUnitEnum(this.toUnit) // Enum for UnitName
+      toUnitName: this.getUnitEnum(this.toUnit), // Enum for UnitName
     };
 
     this.unitConverterService.convert(request).subscribe({
       next: (response: number) => {
-        this.result = `${this.value} ${this.fromUnit} = ${response} ${this.toUnit}`;
+        this.router.navigate(['/result'], {
+          state: {
+            value: this.value,
+            fromUnit: this.fromUnit,
+            toUnit: this.toUnit,
+            result: response,
+          },
+        });
+        console.log('Navigating to /result with state:', {
+          value: this.value,
+          fromUnit: this.fromUnit,
+          toUnit: this.toUnit,
+          result: response,
+        });
       },
       error: (err: any) => {
-        console.log(request);
         console.error('Conversion error:', err);
         this.result = 'Error occurred during conversion';
       },
-      complete: () => {
-        console.log('Conversion completed');
-      }
     });
   }
 
@@ -104,10 +117,11 @@ export class UnitConverterComponent {
       case 'Weight':
         return this.weightUnits[unit as keyof typeof this.weightUnits];
       case 'Temperature':
-        return this.temperatureUnits[unit as keyof typeof this.temperatureUnits];
+        return this.temperatureUnits[
+          unit as keyof typeof this.temperatureUnits
+        ];
       default:
         throw new Error('Invalid unit type');
     }
   }
-  
 }

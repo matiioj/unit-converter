@@ -7,13 +7,12 @@
     </div>
     <input type="number" [(ngModel)]="value" placeholder="Enter the value to convert" required>
     <select [(ngModel)]="fromUnit">
-        <option value="">Unit to Convert from</option>
+        <option value="">Unit to convert from</option>
         <option *ngFor="let unit of getUnits()" [value]="unit">{{unit}}</option>
     </select>
     <select [(ngModel)]="toUnit">
-        <option value="">Unit to Convert to</option>
+        <option value="">Unit to convert to</option>
         <option *ngFor="let unit of getUnits()" [value]="unit">{{unit}}</option>
     </select>
     <button (click)="convert()">Convert</button>
-    <p>{{result}}</p>
 </div>
