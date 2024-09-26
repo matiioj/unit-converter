@@ -7,81 +7,60 @@ import { UnitConverterService } from '../unit-converter.service';
   selector: 'app-unit-converter',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <h1>Unit Converter</h1>
-    <div class="converter-form">
-      <div class="radio-group">
-        <label><input type="radio" [(ngModel)]="unitType" value="Length"> Length</label>
-        <label><input type="radio" [(ngModel)]="unitType" value="Weight"> Weight</label>
-        <label><input type="radio" [(ngModel)]="unitType" value="Temperature"> Temperature</label>
-      </div>
-      <input type="number" [(ngModel)]="value" placeholder="Enter the value to convert" required>
-      <select [(ngModel)]="fromUnit">
-        <option value="">Unit to Convert from</option>
-        <option *ngFor="let unit of getUnits()" [value]="unit">{{unit}}</option>
-      </select>
-      <select [(ngModel)]="toUnit">
-        <option value="">Unit to Convert to</option>
-        <option *ngFor="let unit of getUnits()" [value]="unit">{{unit}}</option>
-      </select>
-      <button (click)="convert()">Convert</button>
-      <p>{{result}}</p>
-    </div>
-  `,
-  styles: [`
-    h1 {
-      color: #333;
-      text-align: center;
-    }
-    .converter-form {
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .radio-group {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-    }
-    input[type="number"], select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  `]
+  templateUrl: './unit-converter.component.html',
+  styleUrls: ['./unit-converter.component.css']
 })
 export class UnitConverterComponent {
-  unitType: string = 'Temperature';
+  // Define unitType as a union of specific keys
+  unitType: 'Length' | 'Weight' | 'Temperature' = 'Temperature';
+
   value: number | null = null;
   fromUnit: string = '';
   toUnit: string = '';
   result: string = '';
+
+  // Define the enums for UnitType and UnitName
+  unitTypes = {
+    Length: 0,
+    Weight: 1,
+    Temperature: 2
+  };
+
+  lengthUnits = {
+    Millimeter: 0,
+    Centimeter: 1,
+    Meter: 2,
+    Kilometer: 3,
+    Inch: 4,
+    Foot: 5,
+    Yard: 6,
+    Mile: 7
+  };
+
+  weightUnits = {
+    Milligram: 8,
+    Gram: 9,
+    Kilogram: 10,
+    Ounce: 11,
+    Pound: 12
+  };
+
+  temperatureUnits = {
+    Celsius: 13,
+    Fahrenheit: 14,
+    Kelvin: 15
+  };
 
   constructor(private unitConverterService: UnitConverterService) {}
 
   getUnits(): string[] {
     switch (this.unitType) {
       case 'Length':
-        return ['Millimeter', 'Centimeter', 'Meter', 'Kilometer', 'Inch', 'Foot', 'Yard', 'Mile'];
+        return Object.keys(this.lengthUnits);
       case 'Weight':
-        return ['Milligram', 'Gram', 'Kilogram', 'Ounce', 'Pound'];
+        return Object.keys(this.weightUnits);
       case 'Temperature':
-        return ['Celsius', 'Fahrenheit', 'Kelvin'];
+        return Object.keys(this.temperatureUnits);
       default:
         return [];
     }
@@ -93,12 +72,13 @@ export class UnitConverterComponent {
       return;
     }
 
+    // Map the unit type and unit name to integers as per the schema
     const request = {
       value: this.value,
-      fromUnitType: this.unitType,
-      fromUnitName: this.fromUnit,
-      toUnitType: this.unitType,
-      toUnitName: this.toUnit
+      fromUnitType: this.unitTypes[this.unitType], // Enum for UnitType
+      fromUnitName: this.getUnitEnum(this.fromUnit), // Enum for UnitName
+      toUnitType: this.unitTypes[this.unitType], // Enum for UnitType
+      toUnitName: this.getUnitEnum(this.toUnit) // Enum for UnitName
     };
 
     this.unitConverterService.convert(request).subscribe({
@@ -106,6 +86,7 @@ export class UnitConverterComponent {
         this.result = `${this.value} ${this.fromUnit} = ${response} ${this.toUnit}`;
       },
       error: (err: any) => {
+        console.log(request);
         console.error('Conversion error:', err);
         this.result = 'Error occurred during conversion';
       },
@@ -114,4 +95,19 @@ export class UnitConverterComponent {
       }
     });
   }
+
+  // Helper method to get the unit enum based on unit type
+  getUnitEnum(unit: string): number {
+    switch (this.unitType) {
+      case 'Length':
+        return this.lengthUnits[unit as keyof typeof this.lengthUnits];
+      case 'Weight':
+        return this.weightUnits[unit as keyof typeof this.weightUnits];
+      case 'Temperature':
+        return this.temperatureUnits[unit as keyof typeof this.temperatureUnits];
+      default:
+        throw new Error('Invalid unit type');
+    }
+  }
+  
 }

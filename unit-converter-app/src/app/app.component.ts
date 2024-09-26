@@ -23,41 +23,4 @@ import { UnitConverterComponent } from './unit-converter/unit-converter.componen
 })
 
 export class AppComponent {
-  unitTypes = ['Length', 'Weight', 'Temperature'];
-  selectedUnitType = 'Length';
-  value: number | null = null;
-  fromUnit = '';
-  toUnit = '';
-  result: string | null = null;
-
-  constructor(private unitConverterService: UnitConverterService) {}
-
-  convert() {
-    if (this.value === null || !this.fromUnit || !this.toUnit) {
-      return;
-    }
-
-    this.unitConverterService.convert({
-      value: this.value,
-      fromUnitType: this.selectedUnitType,
-      fromUnitName: this.fromUnit,
-      toUnitType: this.selectedUnitType,
-      toUnitName: this.toUnit
-    }).subscribe(
-      (result) => {
-        this.result = `${this.value} ${this.fromUnit} = ${result} ${this.toUnit}`;
-      },
-      (error) => {
-        console.error('Conversion error:', error);
-        this.result = 'Error occurred during conversion';
-      }
-    );
-  }
-
-  reset() {
-    this.value = null;
-    this.fromUnit = '';
-    this.toUnit = '';
-    this.result = null;
-  }
 }
